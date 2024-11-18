@@ -1,0 +1,3 @@
+ERROR_CODES <- list(
+    INVALID_INPUT = 1
+)

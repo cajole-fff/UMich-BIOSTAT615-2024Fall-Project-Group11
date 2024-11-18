@@ -1,0 +1,12 @@
+Package: DBSCAN615
+Title: Implementation of the DBSCAN clustering algorithm for BIOSTAT615
+Version: 0.1.0
+Authors@R: c(
+    person("Fan", "Zhang", email = "zff@umich.edu", role = c("aut", "cre"))
+)
+Description: Implementation of the DBSCAN clustering algorithm for BIOSTAT615
+Depends: R (>= 3.5.0)
+Imports:
+    R6
+# TODO: License
+# License: MIT + file LICENSE
