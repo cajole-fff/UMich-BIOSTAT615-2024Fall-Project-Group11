@@ -8,7 +8,8 @@ Description: This package provides an implementation of the DBSCAN
     customizable parameters and efficient computation for clustering tasks.
 Depends: R (>= 3.5.0)
 Imports:
-    R6
+    R6,
+    here
 License: GPL-3
 Encoding: UTF-8
 RoxygenNote: 7.3.2
