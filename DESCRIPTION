@@ -1,12 +1,14 @@
 Package: DBSCAN615
-Title: Implementation of the DBSCAN clustering algorithm for BIOSTAT615
+Title: Implementation of the DBSCAN Clustering Algorithm for BIOSTAT615
 Version: 0.1.0
-Authors@R: c(
-    person("Fan", "Zhang", email = "zff@umich.edu", role = c("aut", "cre"))
-)
-Description: Implementation of the DBSCAN clustering algorithm for BIOSTAT615
+Authors@R: c(person("Fan", "Zhang", email = "zff@umich.edu", role = c("aut", "cre")))
+Description: This package provides an implementation of the DBSCAN 
+    (Density-Based Spatial Clustering of Applications with Noise) clustering 
+    algorithm for the BIOSTAT615 Statistical Computing course. It supports
+    customizable parameters and efficient computation for clustering tasks.
 Depends: R (>= 3.5.0)
 Imports:
     R6
-# TODO: License
-# License: MIT + file LICENSE
+License: GPL-3
+Encoding: UTF-8
+RoxygenNote: 7.3.2

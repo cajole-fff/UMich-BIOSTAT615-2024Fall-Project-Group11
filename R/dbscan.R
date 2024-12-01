@@ -6,11 +6,14 @@ library(R6)
 #'
 #' @details #TODO: fill in details w/ next few lines
 #'
-#' @author Fan Zhang
-#' @created 2024-11-18 01:59:21
-#'
-#' @field field_name1 Description of the first field.
-#' @field field_name2 Description of the second field.
+#' @field ..eps float, default=0.5. The maximum distance between two samples for one to be considered as in the neighborhood of the other.
+#' @field ..min_samples int, default=5. The number of samples (or total weight) in a neighborhood for a point to be considered as a core point.
+#' @field ..metric str or callable, default="euclidean". The metric to use when calculating distance between instances in a feature array.
+#' @field ..metric_params list, default=NULL. Additional keyword arguments for the metric function.
+#' @field ..algorithm str, default="auto". The algorithm to be used by the NearestNeighbors module to compute pointwise distances and find nearest neighbors.
+#' @field ..leaf_size int, default=30. Leaf size passed to BallTree or KDTree.
+#' @field ..p int, default=NULL. Power parameter for the Minkowski metric.
+#' @field ..n_jobs int, default=NULL. The number of parallel jobs to run for neighbors search. If -1, then the number of jobs is set to the number of CPU cores.
 #'
 #' @section Methods:
 #' \describe{
@@ -33,9 +36,28 @@ library(R6)
 #' }
 #'
 #' @export
-DBSCAN615::dbscan <- R6::R6Class(
-    "dbscan",
+DBSCAN <- R6::R6Class(
+    "DBSCAN",
+    inherit = BaseEstimator,
     public = list(
+        #' @description Initializes the DBSCAN class with specified parameters.
+        #' @param eps float, default=0.5
+        #' The maximum distance between two samples for one to be considered as in the neighborhood of the other.
+        #' @param min_samples int, default=5
+        #' The number of samples (or total weight) in a neighborhood for a point to be considered as a core point.
+        #' @param metric str or callable, default="euclidean"
+        #'  The metric to use when calculating distance between instances in a feature array.
+        #' @param metric_params list, default=NULL
+        #' Additional keyword arguments for the metric function.
+        #' @param algorithm str, default="auto"
+        #' The algorithm to be used by the NearestNeighbors module to compute pointwise distances and find nearest neighbors.
+        #' @param leaf_size int, default=30
+        #' Leaf size passed to BallTree or KDTree.
+        #' @param p int, default=NULL
+        #' Power parameter for the Minkowski metric.
+        #' @param n_jobs int, default=NULL
+        #' The number of parallel jobs to run for neighbors search. If -1, then the number of jobs is set to the number of CPU cores.
+        #' @return What the function returns.
         initialize = function(
             eps = 0.5, # float
             min_samples = 5, # int
@@ -55,22 +77,22 @@ DBSCAN615::dbscan <- R6::R6Class(
             private$..leaf_size <- leaf_size
             private$..p <- p
             private$..n_jobs <- n_jobs
-        },
-        fit = function(
-            X, # {array-like, sparse matrix} of shape (n_samples, n_features), or (n_samples, n_samples)
-            y = NULL, # Ignored, present here for API consistency by convention
-            sample_weight = NULL # array-like of shape (n_samples,)
-        ) {
-            #TODO: complete fit method
-
-        },
-        fit_predict = function(
-            X, # {array-like, sparse matrix} of shape (n_samples, n_features), or (n_samples, n_samples)
-            y = NULL, # Ignored, present here for API consistency by convention
-            sample_weight = NULL # array-like of shape (n_samples,)
-        ) {
-            #TODO: complete fit_predict method
         }
+        # fit = function(
+        #     X, # {array-like, sparse matrix} of shape (n_samples, n_features), or (n_samples, n_samples)
+        #     y = NULL, # Ignored, present here for API consistency by convention
+        #     sample_weight = NULL # array-like of shape (n_samples,)
+        # ) {
+        #     #TODO: complete fit method
+
+        # },
+        # fit_predict = function(
+        #     X, # {array-like, sparse matrix} of shape (n_samples, n_features), or (n_samples, n_samples)
+        #     y = NULL, # Ignored, present here for API consistency by convention
+        #     sample_weight = NULL # array-like of shape (n_samples,)
+        # ) {
+        #     #TODO: complete fit_predict method
+        # }
     ),
     private = list(
         ..eps = 0.5,
