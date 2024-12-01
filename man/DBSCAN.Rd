@@ -2,87 +2,31 @@
 % Please edit documentation in R/DBSCAN.R
 \name{DBSCAN}
 \alias{DBSCAN}
-\title{dbscan}
+\title{DBSCAN R6 Class}
 \description{
-A class for DBSCAN clustering.
+A class for performing DBSCAN clustering.
 }
 \details{
-#TODO: fill in details w/ next few lines
-}
-\section{Methods}{
+This class implements the DBSCAN clustering algorithm.
 
-\describe{
-    \item{\code{initialize(args)}}{Description of the constructor method.}
-    \item{\code{$method1()}}{Description of method1.}
-    \item{\code{$method2(args)}}{Description of method2.}
-}
-}
-
-\section{Private Methods}{
-
-\describe{
-    \item{\code{private_method1()}}{Description of private_method1.}
-}
-}
-
-\examples{
-\dontrun{
-    obj <- MyClassnew(arg1 = "value", arg2 = 42)
-    obj$method1()
-    result <- obj$method2(args)("example", 10)
-    print(result)
-}
-
+Private fields (for internal use only):
+- **..eps**: float, default=0.5. The maximum distance between two samples for them to be considered as in the neighborhood of each other.
+- **..min_samples**: int, default=5. The minimum number of samples required to form a cluster.
+- **..metric**: str or callable, default="euclidean". The metric to use when calculating distance between instances in a feature array.
+- **..metric_params**: list, default=NULL. Additional arguments for the metric function.
+- **..algorithm**: str, default="auto". The algorithm used to compute nearest neighbors.
+- **..leaf_size**: int, default=30. Leaf size passed to BallTree or KDTree.
+- **..p**: int, default=NULL. Power parameter for the Minkowski metric.
+- **..n_jobs**: int, default=NULL. The number of parallel jobs to run for neighbor search.
 }
 \section{Super class}{
 \code{\link[DBSCAN615:BaseEstimator]{DBSCAN615::BaseEstimator}} -> \code{DBSCAN}
-}
-\section{Public fields}{
-\if{html}{\out{<div class="r6-fields">}}
-\describe{
-\item{\code{..eps}}{float, default=0.5. The maximum distance between two samples for one to be considered as in the neighborhood of the other.}
-
-\item{\code{..min_samples}}{int, default=5. The number of samples (or total weight) in a neighborhood for a point to be considered as a core point.}
-
-\item{\code{..metric}}{str or callable, default="euclidean". The metric to use when calculating distance between instances in a feature array.}
-
-\item{\code{..metric_params}}{list, default=NULL. Additional keyword arguments for the metric function.}
-
-\item{\code{..algorithm}}{str, default="auto". The algorithm to be used by the NearestNeighbors module to compute pointwise distances and find nearest neighbors.}
-
-\item{\code{..leaf_size}}{int, default=30. Leaf size passed to BallTree or KDTree.}
-
-\item{\code{..p}}{int, default=NULL. Power parameter for the Minkowski metric.}
-
-\item{\code{..n_jobs}}{int, default=NULL. The number of parallel jobs to run for neighbors search. If -1, then the number of jobs is set to the number of CPU cores.}
-}
-\if{html}{\out{</div>}}
-}
-\section{Active bindings}{
-\if{html}{\out{<div class="r6-active-bindings">}}
-\describe{
-\item{\code{..eps}}{float, default=0.5. The maximum distance between two samples for one to be considered as in the neighborhood of the other.}
-
-\item{\code{..min_samples}}{int, default=5. The number of samples (or total weight) in a neighborhood for a point to be considered as a core point.}
-
-\item{\code{..metric}}{str or callable, default="euclidean". The metric to use when calculating distance between instances in a feature array.}
-
-\item{\code{..metric_params}}{list, default=NULL. Additional keyword arguments for the metric function.}
-
-\item{\code{..algorithm}}{str, default="auto". The algorithm to be used by the NearestNeighbors module to compute pointwise distances and find nearest neighbors.}
-
-\item{\code{..leaf_size}}{int, default=30. Leaf size passed to BallTree or KDTree.}
-
-\item{\code{..p}}{int, default=NULL. Power parameter for the Minkowski metric.}
-
-\item{\code{..n_jobs}}{int, default=NULL. The number of parallel jobs to run for neighbors search. If -1, then the number of jobs is set to the number of CPU cores.}
-}
-\if{html}{\out{</div>}}
 }
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-DBSCAN-new}{\code{DBSCAN$new()}}
+\item \href{#method-DBSCAN-fit}{\code{DBSCAN$fit()}}
 \item \href{#method-DBSCAN-clone}{\code{DBSCAN$clone()}}
 }
 }
@@ -115,34 +59,47 @@ Initializes the DBSCAN class with specified parameters.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{eps}}{float, default=0.5
-The maximum distance between two samples for one to be considered as in the neighborhood of the other.}
+\item{\code{eps}}{float, default=0.5. The maximum distance between two samples for one to be considered in the same neighborhood.}
 
-\item{\code{min_samples}}{int, default=5
-The number of samples (or total weight) in a neighborhood for a point to be considered as a core point.}
+\item{\code{min_samples}}{int, default=5. The minimum number of samples required to form a cluster.}
 
-\item{\code{metric}}{str or callable, default="euclidean"
-The metric to use when calculating distance between instances in a feature array.}
+\item{\code{metric}}{str or callable, default="euclidean". The distance metric to use.}
 
-\item{\code{metric_params}}{list, default=NULL
-Additional keyword arguments for the metric function.}
+\item{\code{metric_params}}{list, default=NULL. Additional arguments for the metric function.}
 
-\item{\code{algorithm}}{str, default="auto"
-The algorithm to be used by the NearestNeighbors module to compute pointwise distances and find nearest neighbors.}
+\item{\code{algorithm}}{str, default="auto". The algorithm used to compute nearest neighbors.}
 
-\item{\code{leaf_size}}{int, default=30
-Leaf size passed to BallTree or KDTree.}
+\item{\code{leaf_size}}{int, default=30. Leaf size passed to BallTree or KDTree.}
 
-\item{\code{p}}{int, default=NULL
-Power parameter for the Minkowski metric.}
+\item{\code{p}}{int, default=NULL. Power parameter for Minkowski metric.}
 
-\item{\code{n_jobs}}{int, default=NULL
-The number of parallel jobs to run for neighbors search. If -1, then the number of jobs is set to the number of CPU cores.}
+\item{\code{n_jobs}}{int, default=NULL. The number of parallel jobs to run.}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-DBSCAN-fit"></a>}}
+\if{latex}{\out{\hypertarget{method-DBSCAN-fit}{}}}
+\subsection{Method \code{fit()}}{
+Fits the DBSCAN clustering model on the input data.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DBSCAN$fit(X, y = NULL, sample_weight = NULL)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{X}}{A matrix or data frame. The input data to be clustered.}
+
+\item{\code{y}}{Ignored, present for API consistency.}
+
+\item{\code{sample_weight}}{Numeric vector. Weights for each sample.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-What the function returns.
+The instance itself invisibly.
 }
 }
 \if{html}{\out{<hr>}}

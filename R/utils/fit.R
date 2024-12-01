@@ -1,5 +1,5 @@
 library(Rcpp)
-Rcpp::sourceCpp("../../src/fit.cpp")
+Rcpp::sourceCpp("./src/fit.cpp")
 
 #' @description Fits the DBSCAN clustering model on the input data using Rcpp.
 #' @param X array-like or sparse matrix of shape (n_samples, n_features).

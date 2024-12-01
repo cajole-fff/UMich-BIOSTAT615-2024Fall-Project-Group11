@@ -1,37 +1,33 @@
-#' @title Title of the R6 Class
+#' @title BaseEstimator R6 Class
 #'
-#' @description A brief overview of what this class does.
+#' @description A base class for implementing estimators in R6.
 #'
-#' @details Add more detailed information about the class.
+#' @details This class provides utility methods for managing parameters (`get_params` and `set_params`).
+#' It is intended to be inherited by other estimator classes to streamline parameter handling.
 #'
 #' @section Methods:
 #' \describe{
-#'     \item{\code{initialize(arg1, arg2)}}{Initializes the class with arguments arg1 and arg2.}
-#'     \item{\code{public_method()}}{Performs a public action or calculation.}
-#' }
-#'
-#' @section Private Methods:
-#' \describe{
-#'     \item{\code{$..private_method()}}{Performs an internal, private action or calculation.}
+#'     \item{\code{get_params(deep = TRUE)}}{Retrieves the parameters of the estimator as a named list.}
+#'     \item{\code{set_params(...)}}{Sets the parameters of the estimator, allowing nested parameters.}
 #' }
 #'
 #' @examples
 #' \dontrun{
-#'     # Create an instance of the class
-#'     obj <- MyClassnew(arg1 = "value", arg2 = 42)
+#' # Create an instance of BaseEstimator (or subclass)
+#' base <- BaseEstimator$new()
 #'
-#'     # Call a public method
-#'     objpublic_method()
+#' # Get parameters
+#' params <- base$get_params()
+#' print(params)
 #'
-#'     # Access a public field
-#'     print(objfield_name1)
+#' # Set parameters
+#' base$set_params(param1 = "value", param2 = 42)
 #' }
 #'
-#' @export
 BaseEstimator <- R6::R6Class(
     "BaseEstimator",
     public = list(
-        #' Get parameters for this estimator
+        #' @description Retrieves the parameters of the estimator.
         #' @param deep Logical. If TRUE, include parameters of nested estimators.
         #' @return A named list of parameters.
         get_params = function(deep = TRUE) {
@@ -49,17 +45,17 @@ BaseEstimator <- R6::R6Class(
             return(params)
         },
 
-        #' Set parameters of the estimator
-        #' @description Updates the parameters of the estimator.
+        #' @description Sets the parameters of the estimator.
         #' @param ... Named parameters to update.
-        #' @return The estimator itself (for chaining).
+        #' @return The estimator itself (for method chaining).
         set_params = function(...) {
             params <- list(...)
             if (length(params) == 0) {
-                return(self)  # Simple optimization to gain speed (inspect is slow)
+                return(self)  # Simple optimization
             }
             valid_params <- private$..get_param_names()
             for (key in names(params)) {
+                # Helper function to partition strings
                 partition <- function(string, delim) {
                     pos <- regexpr(delim, string, fixed = TRUE)
                     if (pos[1] == -1) {
@@ -76,15 +72,20 @@ BaseEstimator <- R6::R6Class(
                 sub_key <- parts[3]
                 value <- params[[key]]
                 if (!(key %in% valid_params)) {
-                    stop(paste0("Invalid parameter: ", key, "for estimator", self$class$classname))
-                    stop("Valid parameters are: ", paste(valid_params, collapse = ", "))
+                    stop(paste0("Invalid parameter: ", key, " for estimator ", self$class$classname))
                 }
-
                 if (is.null(delim)) {
                     private[[key]] <- value
                 } else {
-                    #TODO: Implement and test nested parameter setting
+                    # Handle nested parameter setting (if needed)
                     nested <- private[[key]]
+                    if (!is.null(nested)) {
+                        if (is.environment(nested) && is.function(nested$set_params)) {
+                            nested$set_params(... = list(sub_key = value))
+                        } else {
+                            stop(paste0("Nested parameter setting not implemented for key: ", key))
+                        }
+                    }
                 }
             }
             return(self)

@@ -1,0 +1,1 @@
+PKG_CPPFLAGS = -I/usr/local/lib/R/site-library/Rcpp/include

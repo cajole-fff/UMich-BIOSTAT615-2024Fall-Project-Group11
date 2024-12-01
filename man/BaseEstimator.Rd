@@ -2,38 +2,33 @@
 % Please edit documentation in R/base.R
 \name{BaseEstimator}
 \alias{BaseEstimator}
-\title{Title of the R6 Class}
+\title{BaseEstimator R6 Class}
 \description{
-A brief overview of what this class does.
+A base class for implementing estimators in R6.
 }
 \details{
-Add more detailed information about the class.
+This class provides utility methods for managing parameters (`get_params` and `set_params`).
+It is intended to be inherited by other estimator classes to streamline parameter handling.
 }
 \section{Methods}{
 
 \describe{
-    \item{\code{initialize(arg1, arg2)}}{Initializes the class with arguments arg1 and arg2.}
-    \item{\code{public_method()}}{Performs a public action or calculation.}
-}
-}
-
-\section{Private Methods}{
-
-\describe{
-    \item{\code{$..private_method()}}{Performs an internal, private action or calculation.}
+    \item{\code{get_params(deep = TRUE)}}{Retrieves the parameters of the estimator as a named list.}
+    \item{\code{set_params(...)}}{Sets the parameters of the estimator, allowing nested parameters.}
 }
 }
 
 \examples{
 \dontrun{
-    # Create an instance of the class
-    obj <- MyClassnew(arg1 = "value", arg2 = 42)
+# Create an instance of BaseEstimator (or subclass)
+base <- BaseEstimator$new()
 
-    # Call a public method
-    objpublic_method()
+# Get parameters
+params <- base$get_params()
+print(params)
 
-    # Access a public field
-    print(objfield_name1)
+# Set parameters
+base$set_params(param1 = "value", param2 = 42)
 }
 
 }
@@ -49,6 +44,7 @@ Add more detailed information about the class.
 \if{html}{\out{<a id="method-BaseEstimator-get_params"></a>}}
 \if{latex}{\out{\hypertarget{method-BaseEstimator-get_params}{}}}
 \subsection{Method \code{get_params()}}{
+Retrieves the parameters of the estimator.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{BaseEstimator$get_params(deep = TRUE)}\if{html}{\out{</div>}}
 }
@@ -62,14 +58,13 @@ Add more detailed information about the class.
 }
 \subsection{Returns}{
 A named list of parameters.
-Set parameters of the estimator
 }
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-BaseEstimator-set_params"></a>}}
 \if{latex}{\out{\hypertarget{method-BaseEstimator-set_params}{}}}
 \subsection{Method \code{set_params()}}{
-Updates the parameters of the estimator.
+Sets the parameters of the estimator.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{BaseEstimator$set_params(...)}\if{html}{\out{</div>}}
 }
@@ -82,7 +77,7 @@ Updates the parameters of the estimator.
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-The estimator itself (for chaining).
+The estimator itself (for method chaining).
 }
 }
 \if{html}{\out{<hr>}}
