@@ -27,6 +27,7 @@ Private fields (for internal use only):
 \itemize{
 \item \href{#method-DBSCAN-new}{\code{DBSCAN$new()}}
 \item \href{#method-DBSCAN-fit}{\code{DBSCAN$fit()}}
+\item \href{#method-DBSCAN-fit_predict}{\code{DBSCAN$fit_predict()}}
 \item \href{#method-DBSCAN-clone}{\code{DBSCAN$clone()}}
 }
 }
@@ -100,6 +101,30 @@ Fits the DBSCAN clustering model on the input data.
 }
 \subsection{Returns}{
 The instance itself invisibly.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-DBSCAN-fit_predict"></a>}}
+\if{latex}{\out{\hypertarget{method-DBSCAN-fit_predict}{}}}
+\subsection{Method \code{fit_predict()}}{
+Fits the DBSCAN clustering model on the input data and returns cluster labels.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DBSCAN$fit_predict(X, y = NULL, sample_weight = NULL)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{X}}{A matrix or data frame. The input data to be clustered.}
+
+\item{\code{y}}{Ignored, present for API consistency.}
+
+\item{\code{sample_weight}}{Numeric vector. Weights for each sample.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+A numeric vector of cluster labels.
 }
 }
 \if{html}{\out{<hr>}}

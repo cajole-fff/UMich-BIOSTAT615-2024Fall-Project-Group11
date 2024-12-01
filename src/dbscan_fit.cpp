@@ -15,7 +15,7 @@ double euclidean_distance(const NumericVector &a, const NumericVector &b) {
 }
 
 // [[Rcpp::export]]
-List dbscan_fit(NumericMatrix data, double eps, int min_samples) {
+List dbscan_fit_cpp(NumericMatrix data, double eps, int min_samples) {
     R_xlen_t n_samples = data.nrow();
     NumericVector labels(n_samples, -1); // Initialize labels with -1 (noise)
     std::vector<bool> visited(n_samples, false); // Track visited points
