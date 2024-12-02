@@ -1,6 +1,7 @@
 library(Rcpp)
 library(here)
 Rcpp::sourceCpp(here("src/dbscan_fit.cpp"))
+source(here("R/utils/error_handling.R"))
 
 #' @title DBSCAN Clustering Fit Function
 #'
@@ -83,21 +84,32 @@ dbscan_fit <- function(
     n_jobs # {integer} The number of parallel jobs to run.
 ) {
     # Validate input
-    if (is.null(X)) stop("Input data X cannot be NULL.")
-    if (!is.matrix(X)) stop("Input data X must be a matrix.")
-    
-    # Call the C++ DBSCAN implementation
-    result <- dbscan_fit_cpp(
-        X = as.matrix(X),
-        eps = eps,
-        min_samples = min_samples,
-        metric = metric,
-        metric_params = metric_params,
-        algorithm = algorithm,
-        leaf_size = leaf_size,
-        p = p,
-        n_jobs = n_jobs
-    )
+    if (is.null(X)) stop("Input data X cannot be NULL.", call. = FALSE, error_code = 2001)
+    if (!is.matrix(X)) stop("Input data X must be a matrix.", call. = FALSE, error_code = 2002)
+
+    # Try to call the C++ implementation
+    result <- tryCatch({
+        dbscan_fit_cpp(
+            X = as.matrix(X),
+            eps = eps,
+            min_samples = min_samples,
+            metric = metric,
+            metric_params = metric_params,
+            algorithm = algorithm,
+            leaf_size = leaf_size,
+            p = p,
+            n_jobs = n_jobs
+        )
+    }, error = function(e) {
+        stop(
+            paste(
+                get_error_message(3001),
+                e$message
+            ),
+            call. = FALSE,
+            error_code = 3001
+        )
+    })
 
     # Parse the result into a structured list
     parsed_result <- list(

@@ -3,6 +3,7 @@ library(here)
 library(R6)
 source(here("R/BaseEstimator.R"))
 source(here("R/utils/dbscan_fit.R"))
+source(here("R/utils/error_handling.R"))
 
 #' @title DBSCAN R6 Class
 #'
@@ -44,6 +45,30 @@ DBSCAN <- R6::R6Class(
             p = 2.0, 
             n_jobs = 1
         ) {
+            if (!is.numeric(eps) || length(eps) != 1 || eps <= 0) {
+                stop(get_error_message(1001))
+            }
+            if (!is.numeric(min_samples) || length(min_samples) != 1 || min_samples <= 0 || floor(min_samples) != min_samples) {
+                stop(get_error_message(1002))
+            }
+            if (!is.character(metric) || length(metric) != 1) {
+                stop(get_error_message(1003))
+            }
+            if (!is.null(metric_params) && !is.list(metric_params)) {
+                stop(get_error_message(1004))
+            }
+            if (!is.character(algorithm) || length(algorithm) != 1) {
+                stop(get_error_message(1005))
+            }
+            if (!is.numeric(leaf_size) || length(leaf_size) != 1 || leaf_size <= 0 || floor(leaf_size) != leaf_size) {
+                stop(get_error_message(1006))
+            }
+            if (!is.numeric(p) || length(p) != 1 || p <= 0) {
+                stop(get_error_message(1007))
+            }
+            if (!is.numeric(n_jobs) || length(n_jobs) != 1 || floor(n_jobs) != n_jobs) {
+                stop(get_error_message(1008))
+            }
             private$..eps <- eps
             private$..min_samples <- min_samples
             private$..metric <- metric
