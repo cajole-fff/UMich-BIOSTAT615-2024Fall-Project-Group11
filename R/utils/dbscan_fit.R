@@ -24,9 +24,15 @@ dbscan_fit <- function(
     
     # Call the C++ DBSCAN implementation
     result <- dbscan_fit_cpp(
-        data = as.matrix(X),
+        X = as.matrix(X),
         eps = eps,
-        min_samples = min_samples
+        min_samples = min_samples,
+        metric = metric,
+        metric_params = metric_params,
+        algorithm = algorithm,
+        leaf_size = leaf_size,
+        p = p,
+        n_jobs = n_jobs
     )
 
     # Return the result

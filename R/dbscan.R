@@ -32,7 +32,7 @@ DBSCAN <- R6::R6Class(
         #' @param metric_params list, default=NULL. Additional arguments for the metric function.
         #' @param algorithm str, default="auto". The algorithm used to compute nearest neighbors.
         #' @param leaf_size int, default=30. Leaf size passed to BallTree or KDTree.
-        #' @param p int, default=NULL. Power parameter for Minkowski metric.
+        #' @param p int, default=NULL. Power parameter for Minkowski metric. 1 is Manhattan, 2 is Euclidean, infinity is Chebyshev.
         #' @param n_jobs int, default=NULL. The number of parallel jobs to run.
         initialize = function(
             eps = 0.5, 
@@ -41,8 +41,8 @@ DBSCAN <- R6::R6Class(
             metric_params = NULL, 
             algorithm = "auto", 
             leaf_size = 30, 
-            p = NULL, 
-            n_jobs = NULL
+            p = 2.0, 
+            n_jobs = 1
         ) {
             private$..eps <- eps
             private$..min_samples <- min_samples
@@ -61,9 +61,13 @@ DBSCAN <- R6::R6Class(
         #' @param y Ignored, present for API consistency.
         #' @param sample_weight Numeric vector. Weights for each sample.
         #' @return The instance itself invisibly.
-        fit = function(X, y = NULL, sample_weight = NULL) {
+        fit = function(
+            X, 
+            y = NULL, 
+            sample_weight = NULL
+        ) {
             result <- dbscan_fit(
-                X = X,
+                X = as.matrix(X),
                 eps = private$..eps,
                 min_samples = private$..min_samples,
                 metric = private$..metric,
@@ -75,7 +79,7 @@ DBSCAN <- R6::R6Class(
             )
             private$..labels <- result$labels
             private$..n_clusters <- result$n_clusters
-            return(invisible(self))
+            invisible(self)
         },
 
         #' @description Fits the DBSCAN clustering model on the input data and returns cluster labels.
@@ -83,11 +87,28 @@ DBSCAN <- R6::R6Class(
         #' @param y Ignored, present for API consistency.
         #' @param sample_weight Numeric vector. Weights for each sample.
         #' @return A numeric vector of cluster labels.
-        fit_predict = function(X, y = NULL, sample_weight = NULL) {
+        fit_predict = function(
+            X, 
+            y = NULL, 
+            sample_weight = NULL
+        ) {
             self$fit(X, y, sample_weight)
             return(private$..labels)
+        },
+
+        #' @description Retrieves the cluster labels.
+        #' @return A numeric vector of cluster labels.
+        get_labels = function() {
+            return(private$..labels)
+        },
+
+        #' @description Retrieves the number of clusters.
+        #' @return An integer representing the number of clusters.
+        get_n_clusters = function() {
+            return(private$..n_clusters)
         }
     ),
+
     private = list(
         ..eps = 0.5,
         ..min_samples = 5,
@@ -97,7 +118,6 @@ DBSCAN <- R6::R6Class(
         ..leaf_size = 30,
         ..p = NULL,
         ..n_jobs = NULL,
-
         ..labels = NULL,
         ..n_clusters = NULL
     )
