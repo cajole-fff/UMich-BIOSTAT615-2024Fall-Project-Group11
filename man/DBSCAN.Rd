@@ -28,6 +28,12 @@ Private fields (for internal use only):
 \item \href{#method-DBSCAN-new}{\code{DBSCAN$new()}}
 \item \href{#method-DBSCAN-fit}{\code{DBSCAN$fit()}}
 \item \href{#method-DBSCAN-fit_predict}{\code{DBSCAN$fit_predict()}}
+\item \href{#method-DBSCAN-get_labels}{\code{DBSCAN$get_labels()}}
+\item \href{#method-DBSCAN-get_n_clusters}{\code{DBSCAN$get_n_clusters()}}
+\item \href{#method-DBSCAN-get_core_sample_indices}{\code{DBSCAN$get_core_sample_indices()}}
+\item \href{#method-DBSCAN-get_components}{\code{DBSCAN$get_components()}}
+\item \href{#method-DBSCAN-get_n_features_in}{\code{DBSCAN$get_n_features_in()}}
+\item \href{#method-DBSCAN-get_feature_names_in}{\code{DBSCAN$get_feature_names_in()}}
 \item \href{#method-DBSCAN-clone}{\code{DBSCAN$clone()}}
 }
 }
@@ -52,8 +58,8 @@ Initializes the DBSCAN class with specified parameters.
   metric_params = NULL,
   algorithm = "auto",
   leaf_size = 30,
-  p = NULL,
-  n_jobs = NULL
+  p = 2,
+  n_jobs = 1
 )}\if{html}{\out{</div>}}
 }
 
@@ -72,7 +78,7 @@ Initializes the DBSCAN class with specified parameters.
 
 \item{\code{leaf_size}}{int, default=30. Leaf size passed to BallTree or KDTree.}
 
-\item{\code{p}}{int, default=NULL. Power parameter for Minkowski metric.}
+\item{\code{p}}{int, default=NULL. Power parameter for Minkowski metric. 1 is Manhattan, 2 is Euclidean, infinity is Chebyshev.}
 
 \item{\code{n_jobs}}{int, default=NULL. The number of parallel jobs to run.}
 }
@@ -125,6 +131,84 @@ Fits the DBSCAN clustering model on the input data and returns cluster labels.
 }
 \subsection{Returns}{
 A numeric vector of cluster labels.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-DBSCAN-get_labels"></a>}}
+\if{latex}{\out{\hypertarget{method-DBSCAN-get_labels}{}}}
+\subsection{Method \code{get_labels()}}{
+Retrieves the cluster labels.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DBSCAN$get_labels()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+A numeric vector of cluster labels.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-DBSCAN-get_n_clusters"></a>}}
+\if{latex}{\out{\hypertarget{method-DBSCAN-get_n_clusters}{}}}
+\subsection{Method \code{get_n_clusters()}}{
+Retrieves the number of clusters.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DBSCAN$get_n_clusters()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+An integer representing the number of clusters.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-DBSCAN-get_core_sample_indices"></a>}}
+\if{latex}{\out{\hypertarget{method-DBSCAN-get_core_sample_indices}{}}}
+\subsection{Method \code{get_core_sample_indices()}}{
+Retrieves the indices of core samples.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DBSCAN$get_core_sample_indices()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+A numeric vector of core sample indices.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-DBSCAN-get_components"></a>}}
+\if{latex}{\out{\hypertarget{method-DBSCAN-get_components}{}}}
+\subsection{Method \code{get_components()}}{
+Retrieves the components of core samples.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DBSCAN$get_components()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+A matrix of core sample components.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-DBSCAN-get_n_features_in"></a>}}
+\if{latex}{\out{\hypertarget{method-DBSCAN-get_n_features_in}{}}}
+\subsection{Method \code{get_n_features_in()}}{
+Retrieves the number of features in the input data.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DBSCAN$get_n_features_in()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+An integer representing the number of features.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-DBSCAN-get_feature_names_in"></a>}}
+\if{latex}{\out{\hypertarget{method-DBSCAN-get_feature_names_in}{}}}
+\subsection{Method \code{get_feature_names_in()}}{
+Retrieves the feature names from the input data.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{DBSCAN$get_feature_names_in()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+A character vector of feature names.
 }
 }
 \if{html}{\out{<hr>}}

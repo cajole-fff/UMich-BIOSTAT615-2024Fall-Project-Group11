@@ -92,7 +92,7 @@ List dbscan_fit_cpp(NumericMatrix X,
     // Determine core samples
     vector<bool> core_samples(n_samples);
     for (int i = 0; i < n_samples; ++i) {
-        core_samples[i] = neighborhoods[i].size() >= min_samples;
+        core_samples[i] = int(neighborhoods[i].size()) >= min_samples;
     }
 
     // Initialize labels, -1 means noise
@@ -153,5 +153,6 @@ List dbscan_fit_cpp(NumericMatrix X,
     // Return result list
     return List::create(Named("labels") = labels,
                         Named("core_sample_indices") = core_sample_indices,
-                        Named("components") = components);
+                        Named("components") = components,
+                        Named("n_features") = n_features);
 }

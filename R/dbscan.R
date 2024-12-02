@@ -54,6 +54,10 @@ DBSCAN <- R6::R6Class(
             private$..n_jobs <- n_jobs
             private$..labels <- NULL
             private$..n_clusters <- NULL
+            private$..core_sample_indices <- NULL
+            private$..components <- NULL
+            private$..n_features_in <- NULL
+            private$..feature_names_in <- NULL
         },
 
         #' @description Fits the DBSCAN clustering model on the input data.
@@ -78,7 +82,11 @@ DBSCAN <- R6::R6Class(
                 n_jobs = private$..n_jobs
             )
             private$..labels <- result$labels
-            private$..n_clusters <- result$n_clusters
+            private$..n_clusters <- length(unique(result$labels[result$labels != -1]))
+            private$..core_sample_indices <- result$core_sample_indices
+            private$..components <- result$components
+            private$..n_features_in <- ncol(X)
+            private$..feature_names_in <- colnames(X)
             invisible(self)
         },
 
@@ -106,6 +114,30 @@ DBSCAN <- R6::R6Class(
         #' @return An integer representing the number of clusters.
         get_n_clusters = function() {
             return(private$..n_clusters)
+        },
+
+        #' @description Retrieves the indices of core samples.
+        #' @return A numeric vector of core sample indices.
+        get_core_sample_indices = function() {
+            return(private$..core_sample_indices)
+        },
+
+        #' @description Retrieves the components of core samples.
+        #' @return A matrix of core sample components.
+        get_components = function() {
+            return(private$..components)
+        },
+
+        #' @description Retrieves the number of features in the input data.
+        #' @return An integer representing the number of features.
+        get_n_features_in = function() {
+            return(private$..n_features_in)
+        },
+
+        #' @description Retrieves the feature names from the input data.
+        #' @return A character vector of feature names.
+        get_feature_names_in = function() {
+            return(private$..feature_names_in)
         }
     ),
 
@@ -118,7 +150,12 @@ DBSCAN <- R6::R6Class(
         ..leaf_size = 30,
         ..p = NULL,
         ..n_jobs = NULL,
+
         ..labels = NULL,
-        ..n_clusters = NULL
+        ..n_clusters = NULL,
+        ..core_sample_indices = NULL,
+        ..components = NULL,
+        ..n_features_in = NULL,
+        ..feature_names_in = NULL
     )
 )
