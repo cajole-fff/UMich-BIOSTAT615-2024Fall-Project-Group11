@@ -9,7 +9,8 @@ Description: This package provides an implementation of the DBSCAN
 Depends: R (>= 3.5.0)
 Imports:
     R6,
-    here
+    here,
+    yaml
 License: GPL-3
 Encoding: UTF-8
 RoxygenNote: 7.3.2
