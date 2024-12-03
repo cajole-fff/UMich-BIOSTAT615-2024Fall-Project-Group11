@@ -1,7 +1,7 @@
 library(Rcpp)
 library(here)
-Rcpp::sourceCpp(here("src/dbscan_fit.cpp"))
-source(here("R/utils/error_handling.R"))
+Rcpp::sourceCpp(here("src/utils/util_dbscan_fit.cpp"))
+source(here("R/utils/util_error_handling.R"))
 
 #' @title DBSCAN Clustering Fit Function
 #'
@@ -72,7 +72,7 @@ source(here("R/utils/error_handling.R"))
 #' print(result$components)
 #' }
 #'
-dbscan_fit <- function(
+util_dbscan_fit <- function(
     X, # {array-like, sparse matrix} of shape (n_samples, n_features)
     eps, # {numeric} The maximum distance between two samples for one to be considered as in the neighborhood of the other.
     min_samples, # {integer} The number of samples in a neighborhood for a point to be considered as a core point.

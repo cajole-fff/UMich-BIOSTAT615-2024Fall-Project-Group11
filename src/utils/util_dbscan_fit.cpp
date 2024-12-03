@@ -44,7 +44,7 @@ vector<int> compute_neighborhood(const NumericMatrix &X, int point_idx, double e
 }
 
 // [[Rcpp::export]]
-List dbscan_fit_cpp(NumericMatrix X,
+List util_dbscan_fit_cpp(NumericMatrix X,
                     double eps,
                     int min_samples,
                     std::string metric = "euclidean",
