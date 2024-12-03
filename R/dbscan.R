@@ -8,6 +8,8 @@ source(here("R/utils/error_handling.R"))
 source(here("R/visualization/visu_plot_clusters.R"))
 source(here("R/visualization/visu_plot_core_samples.R"))
 source(here("R/metrics/metric_silhouette_score.R"))
+source(here("R/metrics/metric_adjusted_rand_index.R"))
+source(here("R/metrics/metric_noise_ratio.R"))
 
 #' @title DBSCAN R6 Class
 #' @description A class for performing DBSCAN clustering.
@@ -185,41 +187,47 @@ DBSCAN <- R6::R6Class(
                 if (is.null(private$..labels)) {
                     stop("The model must be fitted before calculating the silhouette score.")
                 } else {
-                    labels = private$..labels
+                    stop("Labels must be provided to calculate the silhouette score.")
                 }
                 if (length(unique(labels)) < 2) {
                     stop("Silhouette score cannot be computed with less than 2 clusters.")
                 }
             }
 
-            metric_silhouette_score(X, labels)
+            return(metric_silhouette_score(X, labels))
         },
 
         #' @description Computes the Adjusted Rand Index (ARI) between true labels and predicted labels.
         #' @param true_labels A numeric vector. The true cluster labels.
         #' @return A numeric value representing the ARI score.
-        compute_adjusted_rand_index = function(true_labels) {
-            if (is.null(private$..labels)) {
-                stop("The model must be fitted before calculating ARI.")
+        compute_adjusted_rand_index = function(
+            true_labels,
+            pred_labels = private$..labels
+        ) {
+            if (is.null(pred_labels)) {
+                if (is.null(private$..labels)) {
+                    stop("The model must be fitted before calculating ARI.")
+                } else {
+                    stop("Predicted labels must be provided to calculate ARI.")
+                }
             }
             if (!is.numeric(true_labels)) {
                 stop("True labels must be numeric.")
             }
-            predicted_labels <- private$..labels
-            ari <- adjustedRandIndex(true_labels, predicted_labels)
-            return(ari)
+            return(metric_adjusted_rand_index(true_labels, pred_labels))
         },
 
         #' @description Computes the proportion of noise points in the clustering result.
         #' @return A numeric value representing the proportion of noise points.
-        compute_noise_ratio = function() {
-            if (is.null(private$..labels)) {
-                stop("The model must be fitted before calculating the noise ratio.")
+        compute_noise_ratio = function(labels = private$..labels) {
+            if (is.null(labels)) {
+                if (is.null(private$..labels)) {
+                    stop("The model must be fitted before calculating the noise ratio.")
+                } else {
+                    stop("Labels must be provided to calculate the noise ratio.")
+                }
             }
-            noise_count <- sum(private$..labels == -1)
-            total_count <- length(private$..labels)
-            noise_ratio <- noise_count / total_count
-            return(noise_ratio)
+            return(metric_noise_ratio(labels))
         },
 
         #' @description Retrieves the cluster labels.
