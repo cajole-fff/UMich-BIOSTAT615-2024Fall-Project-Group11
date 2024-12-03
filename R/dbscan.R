@@ -174,6 +174,7 @@ DBSCAN <- R6::R6Class(
 
         #' @description Computes the silhouette score for the clustering result.
         #' @param X A matrix or data frame. The input data used for clustering.
+        #' @param labels A numeric vector of cluster labels.
         #' @return A numeric value representing the silhouette score.
         compute_silhouette_score = function(
             X = private$..X,
@@ -203,6 +204,7 @@ DBSCAN <- R6::R6Class(
 
         #' @description Computes the Adjusted Rand Index (ARI) between true labels and predicted labels.
         #' @param true_labels A numeric vector. The true cluster labels.
+        #' @param pred_labels A numeric vector. The predicted cluster labels.
         #' @return A numeric value representing the ARI score.
         compute_adjusted_rand_index = function(
             true_labels,
@@ -222,6 +224,7 @@ DBSCAN <- R6::R6Class(
         },
 
         #' @description Computes the proportion of noise points in the clustering result.
+        #' @param labels A numeric vector of cluster labels.
         #' @return A numeric value representing the proportion of noise points.
         compute_noise_ratio = function(labels = private$..labels) {
             if (is.null(labels)) {
