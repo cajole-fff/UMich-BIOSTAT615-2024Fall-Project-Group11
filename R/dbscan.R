@@ -180,7 +180,11 @@ DBSCAN <- R6::R6Class(
             labels = private$..labels
         ) {
             if (!is.matrix(X) && !is.data.frame(X)) {
-                stop("Input data must be a matrix or a data frame.")
+                if (is.null(private$..X)) {
+                    stop("The model must be fitted before calculating the silhouette score.")
+                } else {
+                    stop("Input data must be a matrix or a data frame.")
+                }
             }
 
             if (is.null(labels)) {
