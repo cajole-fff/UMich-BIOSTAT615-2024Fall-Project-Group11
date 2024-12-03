@@ -10,7 +10,7 @@ A class for performing DBSCAN clustering.
 This class implements the DBSCAN clustering algorithm.
 }
 \section{Super class}{
-\code{\link[DBSCAN615:BaseEstimator]{DBSCAN615::BaseEstimator}} -> \code{DBSCAN}
+\code{DBSCAN615::BaseEstimator} -> \code{DBSCAN}
 }
 \section{Methods}{
 \subsection{Public methods}{
