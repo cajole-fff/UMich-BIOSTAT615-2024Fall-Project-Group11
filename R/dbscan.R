@@ -1,26 +1,17 @@
 options(here.show_startup_message = FALSE)
 library(here)
 library(R6)
+library(ggplot2)
 source(here("R/BaseEstimator.R"))
 source(here("R/utils/dbscan_fit.R"))
 source(here("R/utils/error_handling.R"))
+source(here("R/visualization/visu_plot_clusters.R"))
+source(here("R/visualization/visu_plot_core_samples.R"))
+source(here("R/metrics/metric_silhouette_score.R"))
 
 #' @title DBSCAN R6 Class
-#'
 #' @description A class for performing DBSCAN clustering.
-#'
 #' @details This class implements the DBSCAN clustering algorithm.
-#' 
-#' Private fields (for internal use only):
-#' - **..eps**: float, default=0.5. The maximum distance between two samples for them to be considered as in the neighborhood of each other.
-#' - **..min_samples**: int, default=5. The minimum number of samples required to form a cluster.
-#' - **..metric**: str or callable, default="euclidean". The metric to use when calculating distance between instances in a feature array.
-#' - **..metric_params**: list, default=NULL. Additional arguments for the metric function.
-#' - **..algorithm**: str, default="auto". The algorithm used to compute nearest neighbors.
-#' - **..leaf_size**: int, default=30. Leaf size passed to BallTree or KDTree.
-#' - **..p**: int, default=NULL. Power parameter for the Minkowski metric.
-#' - **..n_jobs**: int, default=NULL. The number of parallel jobs to run for neighbor search.
-#'
 #' @export
 DBSCAN <- R6::R6Class(
     "DBSCAN",
@@ -35,6 +26,7 @@ DBSCAN <- R6::R6Class(
         #' @param leaf_size int, default=30. Leaf size passed to BallTree or KDTree.
         #' @param p int, default=NULL. Power parameter for Minkowski metric. 1 is Manhattan, 2 is Euclidean, infinity is Chebyshev.
         #' @param n_jobs int, default=NULL. The number of parallel jobs to run.
+        #' @param max_memory int, default=1024. The maximum memory to use for storing the matrix.
         initialize = function(
             eps = 0.5, 
             min_samples = 5, 
@@ -43,7 +35,8 @@ DBSCAN <- R6::R6Class(
             algorithm = "auto", 
             leaf_size = 30, 
             p = 2.0, 
-            n_jobs = 1
+            n_jobs = 1,
+            max_memory = 1024 
         ) {
             if (!is.numeric(eps) || length(eps) != 1 || eps <= 0) {
                 stop(get_error_message(1001))
@@ -77,6 +70,7 @@ DBSCAN <- R6::R6Class(
             private$..leaf_size <- leaf_size
             private$..p <- p
             private$..n_jobs <- n_jobs
+
             private$..labels <- NULL
             private$..n_clusters <- NULL
             private$..core_sample_indices <- NULL
@@ -95,6 +89,16 @@ DBSCAN <- R6::R6Class(
             y = NULL, 
             sample_weight = NULL
         ) {
+            if (!is.matrix(X) && !is.data.frame(X)) {
+                stop("Input data must be a matrix or a data frame.")
+            }
+
+            if (private$..max_memory >= (bitwShiftR(as.numeric(object.size(X)), 20))) {
+                private$..X <- X
+            } else {
+                warning("The input data is too large to store in memory.")
+            }
+
             result <- dbscan_fit(
                 X = as.matrix(X),
                 eps = private$..eps,
@@ -127,6 +131,95 @@ DBSCAN <- R6::R6Class(
         ) {
             self$fit(X, y, sample_weight)
             return(private$..labels)
+        },
+
+        #' @description Plots the clusters formed by the DBSCAN algorithm.
+        #' @param X A matrix or data frame. The input data to be visualized.
+        #' @param title A string. The title of the plot. Default is "DBSCAN Clustering Results".
+        #' @return A ggplot object displaying the clusters.
+        plot_clusters = function(X, title = "DBSCAN Clustering Results") {
+            if (is.null(private$..labels)) {
+                stop("The model must be fitted before plotting clusters.")
+            }
+            if (!is.matrix(X) && !is.data.frame(X)) {
+                stop("Input data must be a matrix or a data frame.")
+            }
+            visu_plot_clusters(
+                X = X,
+                title = title,
+                labels = private$..labels
+            )
+        },
+
+        #' @description Highlights core samples in the clustering results.
+        #' @param X A matrix or data frame. The input data to be visualized.
+        #' @param title A string. The title of the plot. Default is "DBSCAN Core Samples".
+        #' @return A ggplot object displaying the core samples.
+        plot_core_samples = function(X, title = "DBSCAN Core Samples") {
+            if (is.null(private$..core_sample_indices)) {
+                stop("The model must be fitted before plotting core samples.")
+            }
+            if (!is.matrix(X) && !is.data.frame(X)) {
+                stop("Input data must be a matrix or a data frame.")
+            }
+            
+            visu_plot_core_samples(
+                X = X,
+                title = title,
+                core_sample_indices = private$..core_sample_indices
+            )
+        },
+
+        #' @description Computes the silhouette score for the clustering result.
+        #' @param X A matrix or data frame. The input data used for clustering.
+        #' @return A numeric value representing the silhouette score.
+        compute_silhouette_score = function(
+            X = private$..X,
+            labels = private$..labels
+        ) {
+            if (!is.matrix(X) && !is.data.frame(X)) {
+                stop("Input data must be a matrix or a data frame.")
+            }
+
+            if (is.null(labels)) {
+                if (is.null(private$..labels)) {
+                    stop("The model must be fitted before calculating the silhouette score.")
+                } else {
+                    labels = private$..labels
+                }
+                if (length(unique(labels)) < 2) {
+                    stop("Silhouette score cannot be computed with less than 2 clusters.")
+                }
+            }
+
+            metric_silhouette_score(X, labels)
+        },
+
+        #' @description Computes the Adjusted Rand Index (ARI) between true labels and predicted labels.
+        #' @param true_labels A numeric vector. The true cluster labels.
+        #' @return A numeric value representing the ARI score.
+        compute_adjusted_rand_index = function(true_labels) {
+            if (is.null(private$..labels)) {
+                stop("The model must be fitted before calculating ARI.")
+            }
+            if (!is.numeric(true_labels)) {
+                stop("True labels must be numeric.")
+            }
+            predicted_labels <- private$..labels
+            ari <- adjustedRandIndex(true_labels, predicted_labels)
+            return(ari)
+        },
+
+        #' @description Computes the proportion of noise points in the clustering result.
+        #' @return A numeric value representing the proportion of noise points.
+        compute_noise_ratio = function() {
+            if (is.null(private$..labels)) {
+                stop("The model must be fitted before calculating the noise ratio.")
+            }
+            noise_count <- sum(private$..labels == -1)
+            total_count <- length(private$..labels)
+            noise_ratio <- noise_count / total_count
+            return(noise_ratio)
         },
 
         #' @description Retrieves the cluster labels.
@@ -175,6 +268,9 @@ DBSCAN <- R6::R6Class(
         ..leaf_size = 30,
         ..p = NULL,
         ..n_jobs = NULL,
+        ..max_memory = 1024,
+
+        ..X = NULL,
 
         ..labels = NULL,
         ..n_clusters = NULL,
