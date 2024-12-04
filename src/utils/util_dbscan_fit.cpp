@@ -1,16 +1,14 @@
 #include <Rcpp.h>
 #include <vector>
-#include <queue>
 #include <cmath>
 #include <thread>
-#include <mutex>
 #include <future>
+#include <mutex>
 
 using namespace Rcpp;
-using namespace std;
 
 // Helper function to calculate Minkowski distance
-double minkowski_distance(const NumericVector &a, const NumericVector &b, double p) {
+inline double minkowski_distance(const NumericVector &a, const NumericVector &b, double p) {
     double dist = 0.0;
     for (R_xlen_t i = 0; i < a.size(); ++i) {
         dist += std::pow(std::abs(a[i] - b[i]), p);
@@ -18,62 +16,78 @@ double minkowski_distance(const NumericVector &a, const NumericVector &b, double
     return std::pow(dist, 1.0 / p);
 }
 
-// Compute neighborhood for a given point
-vector<int> compute_neighborhood(const NumericMatrix &X, int point_idx, double eps, const string &metric, double p) {
+// Precompute distance matrix
+NumericMatrix compute_distance_matrix(const NumericMatrix &X, const std::string &metric, double p) {
     int n_samples = X.nrow();
-    NumericVector xi = X.row(point_idx);
-    vector<int> neighborhood;
+    NumericMatrix dist_matrix(n_samples, n_samples);
 
-    for (int j = 0; j < n_samples; ++j) {
-        NumericVector xj = X.row(j);
-
-        double dist;
-        if (metric == "euclidean") {
-            dist = minkowski_distance(xi, xj, 2.0);
-        } else if (metric == "minkowski") {
-            dist = minkowski_distance(xi, xj, p);
-        } else {
-            Rcpp::stop("Unsupported metric");
-        }
-
-        if (dist <= eps) {
-            neighborhood.push_back(j);
+    for (int i = 0; i < n_samples; ++i) {
+        for (int j = i + 1; j < n_samples; ++j) {
+            double dist;
+            if (metric == "euclidean") {
+                dist = minkowski_distance(X.row(i), X.row(j), 2.0);
+            } else if (metric == "minkowski") {
+                dist = minkowski_distance(X.row(i), X.row(j), p);
+            } else {
+                Rcpp::stop("Unsupported metric");
+            }
+            dist_matrix(i, j) = dist;
+            dist_matrix(j, i) = dist; // Symmetric
         }
     }
-    return neighborhood;
+    return dist_matrix;
+}
+
+// Compute neighborhoods from distance matrix
+std::vector<std::vector<int>> compute_neighborhoods(const NumericMatrix &dist_matrix, double eps) {
+    int n_samples = dist_matrix.nrow();
+    std::vector<std::vector<int>> neighborhoods(n_samples);
+
+    for (int i = 0; i < n_samples; ++i) {
+        for (int j = 0; j < n_samples; ++j) {
+            if (dist_matrix(i, j) <= eps) {
+                neighborhoods[i].push_back(j);
+            }
+        }
+    }
+    return neighborhoods;
 }
 
 // [[Rcpp::export]]
 List util_dbscan_fit_cpp(NumericMatrix X,
-                    double eps,
-                    int min_samples,
-                    std::string metric = "euclidean",
-                    List metric_params = R_NilValue,
-                    std::string algorithm = "auto",
-                    int leaf_size = 30,
-                    double p = 2,
-                    int n_jobs = 1) {
-
+                         double eps,
+                         int min_samples,
+                         std::string metric = "euclidean",
+                         List metric_params = R_NilValue,
+                         std::string algorithm = "auto",
+                         int leaf_size = 30,
+                         double p = 2,
+                         int n_jobs = 1) {
     int n_samples = X.nrow();
     int n_features = X.ncol();
 
-    // Store each sample's neighborhood
-    vector<vector<int>> neighborhoods(n_samples);
-    
-    // Mutex for thread-safe access to neighborhoods
+    // Precompute distance matrix
+    NumericMatrix dist_matrix = compute_distance_matrix(X, metric, p);
+
+    // Compute neighborhoods (parallelized)
+    std::vector<std::vector<int>> neighborhoods(n_samples);
     std::mutex mtx;
 
-    // Compute neighborhoods in parallel if n_jobs > 1
     auto compute_task = [&](int start_idx, int end_idx) {
         for (int i = start_idx; i < end_idx; ++i) {
-            vector<int> neighborhood = compute_neighborhood(X, i, eps, metric, p);
+            std::vector<int> neighborhood;
+            for (int j = 0; j < n_samples; ++j) {
+                if (dist_matrix(i, j) <= eps) {
+                    neighborhood.push_back(j);
+                }
+            }
             std::lock_guard<std::mutex> lock(mtx);
-            neighborhoods[i] = neighborhood;
+            neighborhoods[i] = std::move(neighborhood);
         }
     };
 
     if (n_jobs > 1) {
-        vector<std::thread> threads;
+        std::vector<std::thread> threads;
         int chunk_size = (n_samples + n_jobs - 1) / n_jobs;
 
         for (int i = 0; i < n_jobs; ++i) {
@@ -90,16 +104,16 @@ List util_dbscan_fit_cpp(NumericMatrix X,
     }
 
     // Determine core samples
-    vector<bool> core_samples(n_samples);
+    std::vector<bool> core_samples(n_samples, false);
     for (int i = 0; i < n_samples; ++i) {
-        core_samples[i] = int(neighborhoods[i].size()) >= min_samples;
+        core_samples[i] = neighborhoods[i].size() >= min_samples;
     }
 
     // Initialize labels, -1 means noise
     IntegerVector labels(n_samples, -1);
 
     int cluster_id = 0;
-    vector<bool> visited(n_samples, false);
+    std::vector<bool> visited(n_samples, false);
 
     // Main loop: process all samples
     for (int i = 0; i < n_samples; ++i) {
@@ -109,27 +123,25 @@ List util_dbscan_fit_cpp(NumericMatrix X,
         if (!core_samples[i]) continue; // Skip non-core points
 
         // Start a new cluster
-        queue<int> neighbors_queue;
+        std::vector<int> cluster_queue = neighborhoods[i];
         labels[i] = cluster_id;
-        neighbors_queue.push(i);
 
-        while (!neighbors_queue.empty()) {
-            int current_point = neighbors_queue.front();
-            neighbors_queue.pop();
+        while (!cluster_queue.empty()) {
+            int current_point = cluster_queue.back();
+            cluster_queue.pop_back();
 
-            vector<int> current_neighbors = neighborhoods[current_point];
+            if (!visited[current_point]) {
+                visited[current_point] = true;
 
-            for (int neighbor_point : current_neighbors) {
-                if (!visited[neighbor_point]) {
-                    visited[neighbor_point] = true;
-                    if (core_samples[neighbor_point]) {
-                        neighbors_queue.push(neighbor_point);
-                    }
+                if (core_samples[current_point]) {
+                    cluster_queue.insert(cluster_queue.end(),
+                                         neighborhoods[current_point].begin(),
+                                         neighborhoods[current_point].end());
                 }
+            }
 
-                if (labels[neighbor_point] == -1) {
-                    labels[neighbor_point] = cluster_id;
-                }
+            if (labels[current_point] == -1) {
+                labels[current_point] = cluster_id;
             }
         }
 
@@ -137,7 +149,7 @@ List util_dbscan_fit_cpp(NumericMatrix X,
     }
 
     // Collect core sample indices
-    vector<int> core_sample_indices;
+    std::vector<int> core_sample_indices;
     for (int i = 0; i < n_samples; ++i) {
         if (core_samples[i]) {
             core_sample_indices.push_back(i);
