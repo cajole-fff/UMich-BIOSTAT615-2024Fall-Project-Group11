@@ -31,7 +31,7 @@ util_dbscan_fit <- function(
 
     # Try to call the C++ implementation
     result <- tryCatch({
-        dbscan_fit_cpp(
+        util_dbscan_fit_cpp(
             X = as.matrix(X),
             eps = eps,
             min_samples = min_samples,

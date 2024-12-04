@@ -101,7 +101,7 @@ DBSCAN <- R6::R6Class(
                 warning("The input data is too large to store in memory.")
             }
 
-            result <- dbscan_fit(
+            result <- util_dbscan_fit(
                 X = as.matrix(X),
                 eps = private$..eps,
                 min_samples = private$..min_samples,
@@ -139,17 +139,39 @@ DBSCAN <- R6::R6Class(
         #' @param X A matrix or data frame. The input data to be visualized.
         #' @param title A string. The title of the plot. Default is "DBSCAN Clustering Results".
         #' @return A ggplot object displaying the clusters.
-        plot_clusters = function(X, title = "DBSCAN Clustering Results") {
-            if (is.null(private$..labels)) {
-                stop("The model must be fitted before plotting clusters.")
-            }
+        plot_clusters = function(
+            X = private$..X,
+            title = "DBSCAN Clustering Results",
+            labels = private$..labels,
+            method = "pca",
+            col_names = c("PC1", "PC2")
+        ) {
             if (!is.matrix(X) && !is.data.frame(X)) {
                 stop("Input data must be a matrix or a data frame.")
+            } else {
+                if (is.null(X)) {
+                    if (is.null(private$..X)) {
+                        stop("The model must be fitted before plotting clusters.")
+                    } else {
+                        stop("Labels must be provided to plot clusters.")
+                    }
+                }
             }
+
+            if (is.null(labels)) {
+                if (is.null(private$..labels)) {
+                    stop("The model must be fitted before plotting clusters.")
+                } else {
+                    stop("Labels must be provided to plot clusters.")
+                }
+            }
+
             visu_plot_clusters(
                 X = X,
                 title = title,
-                labels = private$..labels
+                labels = private$..labels,
+                method = method,
+                col_names = col_names
             )
         },
 
