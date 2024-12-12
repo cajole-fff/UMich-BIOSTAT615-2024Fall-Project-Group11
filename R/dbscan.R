@@ -138,6 +138,9 @@ DBSCAN <- R6::R6Class(
         #' @description Plots the clusters formed by the DBSCAN algorithm.
         #' @param X A matrix or data frame. The input data to be visualized.
         #' @param title A string. The title of the plot. Default is "DBSCAN Clustering Results".
+        #' @param labels A numeric vector of cluster labels.
+        #' @param method A string. The dimensionality reduction method to use. Default is "pca".
+        #' @param col_names A character vector of column names for the plot. Default is c("PC1", "PC2").
         #' @return A ggplot object displaying the clusters.
         plot_clusters = function(
             X = private$..X,

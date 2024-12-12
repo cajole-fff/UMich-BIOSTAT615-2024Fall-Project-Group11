@@ -10,7 +10,7 @@ A class for performing DBSCAN clustering.
 This class implements the DBSCAN clustering algorithm.
 }
 \section{Super class}{
-\code{DBSCAN615::BaseEstimator} -> \code{DBSCAN}
+\code{\link[DBSCAN615:BaseEstimator]{DBSCAN615::BaseEstimator}} -> \code{DBSCAN}
 }
 \section{Methods}{
 \subsection{Public methods}{
@@ -137,7 +137,13 @@ A numeric vector of cluster labels.
 \subsection{Method \code{plot_clusters()}}{
 Plots the clusters formed by the DBSCAN algorithm.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{DBSCAN$plot_clusters(X, title = "DBSCAN Clustering Results")}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{DBSCAN$plot_clusters(
+  X = private$..X,
+  title = "DBSCAN Clustering Results",
+  labels = private$..labels,
+  method = "pca",
+  col_names = c("PC1", "PC2")
+)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -146,6 +152,12 @@ Plots the clusters formed by the DBSCAN algorithm.
 \item{\code{X}}{A matrix or data frame. The input data to be visualized.}
 
 \item{\code{title}}{A string. The title of the plot. Default is "DBSCAN Clustering Results".}
+
+\item{\code{labels}}{A numeric vector of cluster labels.}
+
+\item{\code{method}}{A string. The dimensionality reduction method to use. Default is "pca".}
+
+\item{\code{col_names}}{A character vector of column names for the plot. Default is c("PC1", "PC2").}
 }
 \if{html}{\out{</div>}}
 }
