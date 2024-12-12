@@ -1,3 +1,4 @@
 .vscode/
 dev_tests/
 .lintr
+.Rbuildignore

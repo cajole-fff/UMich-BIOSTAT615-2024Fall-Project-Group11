@@ -1,1 +1,2 @@
+SOURCES = metrics/metric_adjusted_rand_index.cpp metrics/metric_silhouette_score.cpp utils/util_dbscan_fit.cpp
 PKG_CPPFLAGS = -I/usr/local/lib/R/site-library/Rcpp/include
