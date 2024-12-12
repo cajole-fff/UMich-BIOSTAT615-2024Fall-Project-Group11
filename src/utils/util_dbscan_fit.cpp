@@ -106,7 +106,7 @@ List util_dbscan_fit_cpp(NumericMatrix X,
     // Determine core samples
     std::vector<bool> core_samples(n_samples, false);
     for (int i = 0; i < n_samples; ++i) {
-        core_samples[i] = neighborhoods[i].size() >= min_samples;
+        core_samples[i] = int(neighborhoods[i].size()) >= min_samples;
     }
 
     // Initialize labels, -1 means noise
