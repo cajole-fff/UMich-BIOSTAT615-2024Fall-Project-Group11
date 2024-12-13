@@ -26,4 +26,5 @@ testMinkowskiDistanceSparse = function (n, p) {
     return (n_correct / n)
 }
 
-testMinkowskiDistanceSparse(10, 20)
+p=6
+testMinkowskiDistanceSparse(10, p)
