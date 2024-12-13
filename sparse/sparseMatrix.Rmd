@@ -1,0 +1,45 @@
+---
+title: "Sparse Matrix Implementation of DBSCAN"
+author: "Grace Richards"
+date: "2024-12-10"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Motivation
+
+The current implementation DBSCAN in Python's Scikit-Learn package does not support sparse matrix formatting\  
+
+*Provide examples of when this might be useful, i.e., real-world sparse data that can b clustered. e.g. mostly blank images?*\  
+"Text mining and natural language processing
+Spatial epidemiology
+Genetics
+Genomics
+Imaging" -Topic 3 Slides
+
+One advantage of this re-implementation of DBSCAN in R is its compatibility with sparse matrices using R's 'Matrix' package. This package's sparse matrix data types ignore the zero-entries of these matrices in order to store data much more compactly than a standard R matrix with all zero and non-zero entries included. There are two main efficiency gains that come from the use of sparse matrix data types: one, that computations using sparse matrix representations use much less storage space, and two, that these computations can be much faster than that of base-R matrices. Both of of these efficiency gains have the potential to be very valuable when working with large datasets.\  
+
+However, it's worth noting that the central clustering algorithm of our R package is implemented using Rcpp to increase computational efficiency. This raises the question of whether implementation using R's 'Matrix' package will increase either the storage efficiency or the computational efficiency of the DBSCAN algorithm. *Write conclusion here once implemented and tested*. More specifically, even re-implementation of the Minkowski distance algorithm using sparse matrix formatting *blah blah blah*.
+
+## Analysis
+
+*Find bottleneck in code. Is Minkowski distance what I want to focus on?*
+
+```{r, eval=FALSE}
+library(profvis)
+
+tmp <- tempfile()
+Rprof(tmp)
+test.prime() #Test the DBSCAN function on multiple datasets
+Rprof(NULL)
+summaryRprof(tmp)
+
+profvis(test.prime())
+```
+
+Suppose we have a matrix $A_{n*p}$ with sparsity $S$, that is the probability that any given value is nonzero is $(1-S)<<1$. Thus, assuming that the entries of different rows are independent of one another *BIG ASSUMPTION; address later?*, the probability that the $k$-th entries of two different rows of $A$ are nonzero is $(1-S)^2$, a *very* small value. Thus, sparse matrix implementation of the Minkowski distance is made faster not only by the small number of values provided, but by the fact that the number of points where we calculate a difference is *very* small. In fact, the overwhelming majority of the distance calculation is simply summing the absolute values.
+
+*simply sum values for decent estimate of distance*
