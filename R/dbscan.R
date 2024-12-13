@@ -1,15 +1,15 @@
-options(here.show_startup_message = FALSE)
+# options(here.show_startup_message = FALSE)
 library(here)
 library(R6)
 library(ggplot2)
-source(here("R/BaseEstimator.R"))
-source(here("R/utils/util_dbscan_fit.R"))
-source(here("R/utils/util_error_handling.R"))
-source(here("R/visualization/visu_plot_clusters.R"))
-source(here("R/visualization/visu_plot_core_samples.R"))
-source(here("R/metrics/metric_silhouette_score.R"))
-source(here("R/metrics/metric_adjusted_rand_index.R"))
-source(here("R/metrics/metric_noise_ratio.R"))
+# source(here("R/BaseEstimator.R"))
+# source(here("R/utils/util_dbscan_fit.R"))
+# source(here("R/utils/util_error_handling.R"))
+# source(here("R/visualization/visu_plot_clusters.R"))
+# source(here("R/visualization/visu_plot_core_samples.R"))
+# source(here("R/metrics/metric_silhouette_score.R"))
+# source(here("R/metrics/metric_adjusted_rand_index.R"))
+# source(here("R/metrics/metric_noise_ratio.R"))
 
 #' @title DBSCAN R6 Class
 #' @description A class for performing DBSCAN clustering.
@@ -41,28 +41,28 @@ DBSCAN <- R6::R6Class(
             max_memory = 1024 
         ) {
             if (!is.numeric(eps) || length(eps) != 1 || eps <= 0) {
-                stop(get_error_message(1001))
+                stop("Invalid 'eps': must be a positive numeric scalar.")
             }
             if (!is.numeric(min_samples) || length(min_samples) != 1 || min_samples <= 0 || floor(min_samples) != min_samples) {
-                stop(get_error_message(1002))
+                stop("Invalid 'min_samples': must be a positive integer scalar.")
             }
             if (!is.character(metric) || length(metric) != 1) {
-                stop(get_error_message(1003))
+                stop("Invalid 'metric': must be a character scalar.")
             }
             if (!is.null(metric_params) && !is.list(metric_params)) {
-                stop(get_error_message(1004))
+                stop("Invalid 'metric_params': must be a list.")
             }
             if (!is.character(algorithm) || length(algorithm) != 1) {
-                stop(get_error_message(1005))
+                stop("Invalid 'algorithm': must be a character scalar.")
             }
             if (!is.numeric(leaf_size) || length(leaf_size) != 1 || leaf_size <= 0 || floor(leaf_size) != leaf_size) {
-                stop(get_error_message(1006))
+                stop("Invalid 'leaf_size': must be a positive integer scalar.")
             }
             if (!is.numeric(p) || length(p) != 1 || p <= 0) {
-                stop(get_error_message(1007))
+                stop("Invalid 'p': must be a positive numeric scalar.")
             }
             if (!is.numeric(n_jobs) || length(n_jobs) != 1 || floor(n_jobs) != n_jobs) {
-                stop(get_error_message(1008))
+                stop("Invalid 'n_jobs': must be an integer scalar.")
             }
             private$..eps <- eps
             private$..min_samples <- min_samples
