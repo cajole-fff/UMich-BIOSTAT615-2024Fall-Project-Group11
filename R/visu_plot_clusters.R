@@ -30,10 +30,11 @@ visu_plot_clusters <- function(
     }
     
     X$cluster <- factor(labels)
+    colnames(X)[1:2] <- col_names  # Assign column names dynamically
     
     p <- ggplot2::ggplot(
             X,
-            ggplot2::aes(x = .data[[1]], y = .data[[2]], color = .data$cluster)
+            ggplot2::aes(x = .data[[col_names[1]]], y = .data[[col_names[2]]], color = .data$cluster)
         ) +
         ggplot2::geom_point(size = 2, alpha = 0.8) +
         ggplot2::labs(title = title, x = col_names[1], y = col_names[2], color = "Cluster") +
