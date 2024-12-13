@@ -1,18 +1,14 @@
 #' @importFrom R6 R6Class
 
 #' @title BaseEstimator R6 Class
-#'
 #' @description A base class for implementing estimators in R6.
-#'
 #' @details This class provides utility methods for managing parameters (`get_params` and `set_params`).
 #' It is intended to be inherited by other estimator classes to streamline parameter handling.
-#'
 #' @section Methods:
 #' \describe{
 #'     \item{\code{get_params(deep = TRUE)}}{Retrieves the parameters of the estimator as a named list.}
 #'     \item{\code{set_params(...)}}{Sets the parameters of the estimator, allowing nested parameters.}
 #' }
-#'
 #' @examples
 #' \dontrun{
 #' # Create an instance of BaseEstimator (or subclass)

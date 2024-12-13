@@ -2,19 +2,6 @@
 #' @importFrom Rcpp evalCpp 
 #' @importFrom R6 R6Class
 
-# options(here.show_startup_message = FALSE)
-# library(here)
-# library(R6)
-# library(ggplot2)
-# source(here("R/BaseEstimator.R"))
-# source(here("R/utils/util_dbscan_fit.R"))
-# source(here("R/utils/util_error_handling.R"))
-# source(here("R/visualization/visu_plot_clusters.R"))
-# source(here("R/visualization/visu_plot_core_samples.R"))
-# source(here("R/metrics/metric_silhouette_score.R"))
-# source(here("R/metrics/metric_adjusted_rand_index.R"))
-# source(here("R/metrics/metric_noise_ratio.R"))
-
 #' @title DBSCAN R6 Class
 #' @description A class for performing DBSCAN clustering.
 #' @details This class implements the DBSCAN clustering algorithm.

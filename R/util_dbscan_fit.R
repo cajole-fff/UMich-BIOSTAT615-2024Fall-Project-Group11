@@ -1,6 +1,3 @@
-# library(Rcpp)
-# Rcpp::sourceCpp("src/utils/util_dbscan_fit.cpp")
-
 #' @title DBSCAN Clustering Fit Function
 #' @description Fits the DBSCAN clustering model on the input data using Rcpp for efficient computation.
 #' @param X matrix, a numeric matrix of shape (n_samples, n_features), representing the input data to be clustered.

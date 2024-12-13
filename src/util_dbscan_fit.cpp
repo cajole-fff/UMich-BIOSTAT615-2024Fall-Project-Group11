@@ -7,7 +7,6 @@
 
 using namespace Rcpp;
 
-// Helper function to calculate Minkowski distance
 inline double minkowski_distance(const NumericVector &a, const NumericVector &b, double p) {
     double dist = 0.0;
     for (R_xlen_t i = 0; i < a.size(); ++i) {
@@ -16,7 +15,6 @@ inline double minkowski_distance(const NumericVector &a, const NumericVector &b,
     return std::pow(dist, 1.0 / p);
 }
 
-// Precompute distance matrix
 NumericMatrix compute_distance_matrix(const NumericMatrix &X, const std::string &metric, double p) {
     int n_samples = X.nrow();
     NumericMatrix dist_matrix(n_samples, n_samples);
@@ -38,7 +36,6 @@ NumericMatrix compute_distance_matrix(const NumericMatrix &X, const std::string 
     return dist_matrix;
 }
 
-// Compute neighborhoods from distance matrix
 std::vector<std::vector<int>> compute_neighborhoods(const NumericMatrix &dist_matrix, double eps) {
     int n_samples = dist_matrix.nrow();
     std::vector<std::vector<int>> neighborhoods(n_samples);
@@ -66,10 +63,8 @@ List util_dbscan_fit_cpp(NumericMatrix X,
     int n_samples = X.nrow();
     int n_features = X.ncol();
 
-    // Precompute distance matrix
     NumericMatrix dist_matrix = compute_distance_matrix(X, metric, p);
 
-    // Compute neighborhoods (parallelized)
     std::vector<std::vector<int>> neighborhoods(n_samples);
     std::mutex mtx;
 
@@ -103,26 +98,22 @@ List util_dbscan_fit_cpp(NumericMatrix X,
         compute_task(0, n_samples);
     }
 
-    // Determine core samples
     std::vector<bool> core_samples(n_samples, false);
     for (int i = 0; i < n_samples; ++i) {
         core_samples[i] = int(neighborhoods[i].size()) >= min_samples;
     }
 
-    // Initialize labels, -1 means noise
     IntegerVector labels(n_samples, -1);
 
     int cluster_id = 0;
     std::vector<bool> visited(n_samples, false);
 
-    // Main loop: process all samples
     for (int i = 0; i < n_samples; ++i) {
         if (visited[i]) continue;
         visited[i] = true;
 
-        if (!core_samples[i]) continue; // Skip non-core points
+        if (!core_samples[i]) continue;
 
-        // Start a new cluster
         std::vector<int> cluster_queue = neighborhoods[i];
         labels[i] = cluster_id;
 
@@ -148,7 +139,6 @@ List util_dbscan_fit_cpp(NumericMatrix X,
         cluster_id++;
     }
 
-    // Collect core sample indices
     std::vector<int> core_sample_indices;
     for (int i = 0; i < n_samples; ++i) {
         if (core_samples[i]) {
@@ -156,13 +146,11 @@ List util_dbscan_fit_cpp(NumericMatrix X,
         }
     }
 
-    // Prepare core sample data
     NumericMatrix components(core_sample_indices.size(), n_features);
     for (size_t i = 0; i < core_sample_indices.size(); ++i) {
         components(i, _) = X.row(core_sample_indices[i]);
     }
 
-    // Return result list
     return List::create(Named("labels") = labels,
                         Named("core_sample_indices") = core_sample_indices,
                         Named("components") = components,

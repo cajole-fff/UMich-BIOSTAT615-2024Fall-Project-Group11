@@ -5,7 +5,6 @@
 #include <limits>
 #include <unordered_map>
 
-// Helper function to calculate Euclidean distance matrix
 Rcpp::NumericMatrix compute_distance_matrix(const Rcpp::NumericMatrix &X) {
     int n = X.nrow();
     Rcpp::NumericMatrix dist_matrix(n, n);
@@ -30,12 +29,10 @@ double metric_silhouette_score_cpp(Rcpp::NumericMatrix X, Rcpp::IntegerVector la
     Rcpp::NumericMatrix dist_matrix = compute_distance_matrix(X);
     std::vector<double> sil_widths(n);
     
-    // Find unique cluster labels
     Rcpp::IntegerVector unique_labels = Rcpp::sort_unique(labels);
     int num_clusters = unique_labels.size();
     
     for (int i = 0; i < n; ++i) {
-        // Compute a(i): Average distance to points in the same cluster
         double a_i = 0.0;
         int same_cluster_count = 0;
         
@@ -49,7 +46,6 @@ double metric_silhouette_score_cpp(Rcpp::NumericMatrix X, Rcpp::IntegerVector la
             a_i /= same_cluster_count;
         }
         
-        // Compute b(i): Minimum average distance to points in other clusters
         double b_i = std::numeric_limits<double>::max();
         for (int label : unique_labels) {
             if (label == labels[i]) continue;
@@ -69,7 +65,6 @@ double metric_silhouette_score_cpp(Rcpp::NumericMatrix X, Rcpp::IntegerVector la
             }
         }
         
-        // Compute silhouette width for point i
         if (same_cluster_count > 0 && num_clusters > 1) {
             sil_widths[i] = (b_i - a_i) / std::max(a_i, b_i);
         } else {
@@ -77,7 +72,6 @@ double metric_silhouette_score_cpp(Rcpp::NumericMatrix X, Rcpp::IntegerVector la
         }
     }
     
-    // Compute mean silhouette score
     double mean_score = std::accumulate(sil_widths.begin(), sil_widths.end(), 0.0) / n;
     return mean_score;
 }

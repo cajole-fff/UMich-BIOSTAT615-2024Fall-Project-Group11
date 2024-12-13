@@ -1,6 +1,3 @@
-# library(Rcpp)
-# Rcpp::sourceCpp(here("src/metrics/metric_silhouette_score.cpp"))
-
 #' @title Silhouette Score Metric
 #' @description Computes the Silhouette Score for clustering evaluation.
 #' @param X matrix, a numeric matrix of shape (n_samples, n_features), representing the input data to be clustered.
