@@ -1,6 +1,6 @@
-library(Rcpp)
-library(here)
-Rcpp::sourceCpp(here("src/metrics/metric_adjusted_rand_index.cpp"))
+# library(Rcpp)
+# library(here)
+# Rcpp::sourceCpp(here("src/metrics/metric_adjusted_rand_index.cpp"))
 
 #' @title Adjusted Rand Index Metric
 #' @description Computes the Adjusted Rand Index (ARI) for clustering evaluation.

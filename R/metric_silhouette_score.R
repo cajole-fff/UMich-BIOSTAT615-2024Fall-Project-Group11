@@ -1,6 +1,5 @@
-library(Rcpp)
-library(here)
-Rcpp::sourceCpp(here("src/metrics/metric_silhouette_score.cpp"))
+# library(Rcpp)
+# Rcpp::sourceCpp(here("src/metrics/metric_silhouette_score.cpp"))
 
 #' @title Silhouette Score Metric
 #' @description Computes the Silhouette Score for clustering evaluation.

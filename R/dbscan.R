@@ -1,7 +1,11 @@
+#' @useDynLib DBSCAN615, .registration = TRUE
+#' @importFrom Rcpp evalCpp 
+#' @importFrom R6 R6Class
+
 # options(here.show_startup_message = FALSE)
-library(here)
-library(R6)
-library(ggplot2)
+# library(here)
+# library(R6)
+# library(ggplot2)
 # source(here("R/BaseEstimator.R"))
 # source(here("R/utils/util_dbscan_fit.R"))
 # source(here("R/utils/util_error_handling.R"))

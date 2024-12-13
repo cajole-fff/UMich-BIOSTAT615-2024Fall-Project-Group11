@@ -1,3 +1,5 @@
+#' @importFrom R6 R6Class
+
 #' @title BaseEstimator R6 Class
 #'
 #' @description A base class for implementing estimators in R6.

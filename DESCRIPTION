@@ -4,16 +4,19 @@ Version: 0.1.0
 Authors@R: c(person("Fan", "Zhang", email = "zff@umich.edu", role = c("aut", "cre")))
 Description: This package provides an implementation of the DBSCAN 
     (Density-Based Spatial Clustering of Applications with Noise) clustering 
-    algorithm for the BIOSTAT615 Statistical Computing course. It supports
+    algorithm for the BIOSTAT615 Statistical Computing course. It supports 
     customizable parameters and efficient computation for clustering tasks.
 Depends: R (>= 3.5.0)
 Imports:
-    R6,
-    here,
-    yaml,
-    Rcpp,
     ggplot2,
+    R6,
+    Rcpp,
+    rlang,
+    Rtsne,
+    stats
+LinkingTo: Rcpp
+Suggests:
+    testthat (>= 3.0.0)
 License: GPL-3
 Encoding: UTF-8
 RoxygenNote: 7.3.2
-LinkingTo: Rcpp

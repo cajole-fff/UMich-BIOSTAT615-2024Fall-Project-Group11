@@ -1,7 +1,5 @@
-library(Rcpp)
-library(here)
-Rcpp::sourceCpp(here("src/utils/util_dbscan_fit.cpp"))
-source(here("R/utils/util_error_handling.R"))
+# library(Rcpp)
+# Rcpp::sourceCpp("src/utils/util_dbscan_fit.cpp")
 
 #' @title DBSCAN Clustering Fit Function
 #' @description Fits the DBSCAN clustering model on the input data using Rcpp for efficient computation.
@@ -26,8 +24,8 @@ util_dbscan_fit <- function(
     n_jobs # {integer} The number of parallel jobs to run.
 ) {
     # Validate input
-    if (is.null(X)) stop("Input data X cannot be NULL.", call. = FALSE, error_code = 2001)
-    if (!is.matrix(X)) stop("Input data X must be a matrix.", call. = FALSE, error_code = 2002)
+    if (is.null(X)) stop("Input data X cannot be NULL.", call. = FALSE)
+    if (!is.matrix(X)) stop("Input data X must be a matrix.", call. = FALSE)
 
     # Try to call the C++ implementation
     result <- tryCatch({
@@ -45,11 +43,10 @@ util_dbscan_fit <- function(
     }, error = function(e) {
         stop(
             paste(
-                get_error_message(3001),
+                "An error occurred while fitting the DBSCAN model:",
                 e$message
             ),
-            call. = FALSE,
-            error_code = 3001
+            call. = FALSE
         )
     })
 
