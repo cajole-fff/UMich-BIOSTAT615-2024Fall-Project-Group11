@@ -53,7 +53,6 @@ BaseEstimator <- R6::R6Class(
             }
             valid_params <- private$..get_param_names()
             for (key in names(params)) {
-                # Partition logic for nested keys
                 partition <- function(string, delim) {
                     pos <- regexpr(delim, string, fixed = TRUE)
                     if (pos[1] == -1) {
@@ -75,7 +74,6 @@ BaseEstimator <- R6::R6Class(
                 if (is.null(delim)) {
                     private[[key]] <- value
                 } else {
-                    # Handle nested parameter setting
                     nested <- private[[key]]
                     if (!is.null(nested) && is.environment(nested) && is.function(nested$set_params)) {
                         nested$set_params(... = list(sub_key = value))
