@@ -23,24 +23,24 @@ BEGIN_RCPP
 END_RCPP
 }
 // metric_silhouette_score_cpp
-double metric_silhouette_score_cpp(Rcpp::NumericMatrix X, Rcpp::IntegerVector labels);
+double metric_silhouette_score_cpp(Rcpp::RObject X, Rcpp::IntegerVector labels);
 RcppExport SEXP _DBSCAN615_metric_silhouette_score_cpp(SEXP XSEXP, SEXP labelsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Rcpp::NumericMatrix >::type X(XSEXP);
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type X(XSEXP);
     Rcpp::traits::input_parameter< Rcpp::IntegerVector >::type labels(labelsSEXP);
     rcpp_result_gen = Rcpp::wrap(metric_silhouette_score_cpp(X, labels));
     return rcpp_result_gen;
 END_RCPP
 }
 // util_dbscan_fit_cpp
-List util_dbscan_fit_cpp(NumericMatrix X, double eps, int min_samples, std::string metric, List metric_params, std::string algorithm, int leaf_size, double p, int n_jobs);
+List util_dbscan_fit_cpp(SEXP X, double eps, int min_samples, std::string metric, List metric_params, std::string algorithm, int leaf_size, double p, int n_jobs);
 RcppExport SEXP _DBSCAN615_util_dbscan_fit_cpp(SEXP XSEXP, SEXP epsSEXP, SEXP min_samplesSEXP, SEXP metricSEXP, SEXP metric_paramsSEXP, SEXP algorithmSEXP, SEXP leaf_sizeSEXP, SEXP pSEXP, SEXP n_jobsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericMatrix >::type X(XSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type X(XSEXP);
     Rcpp::traits::input_parameter< double >::type eps(epsSEXP);
     Rcpp::traits::input_parameter< int >::type min_samples(min_samplesSEXP);
     Rcpp::traits::input_parameter< std::string >::type metric(metricSEXP);

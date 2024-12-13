@@ -10,24 +10,25 @@
 #' @param p numeric, power parameter for the Minkowski metric. When `p=1`, this is equivalent to the Manhattan distance. When `p=2`, this is equivalent to the Euclidean distance. Default is `2`.
 #' @param n_jobs integer, the number of parallel jobs to run for neighborhood computation. If `1`, no parallelization is used. Default is `1`.
 util_dbscan_fit <- function(
-    X, # {array-like, sparse matrix} of shape (n_samples, n_features)
-    eps, # {numeric} The maximum distance between two samples for one to be considered as in the neighborhood of the other.
-    min_samples, # {integer} The number of samples in a neighborhood for a point to be considered as a core point.
-    metric, # {string} The metric to use when calculating distance between instances in a feature array.
-    metric_params, # {list} Additional arguments for the metric function.
-    algorithm, # {string} The algorithm used to compute nearest neighbors.
-    leaf_size, # {integer} Leaf size passed to BallTree or KDTree.
-    p, # {integer} Power parameter for the Minkowski metric.
-    n_jobs # {integer} The number of parallel jobs to run.
+    X,
+    eps,
+    min_samples,
+    metric = "euclidean",
+    metric_params = NULL,
+    algorithm = "auto",
+    leaf_size = 30,
+    p = 2,
+    n_jobs = 1
 ) {
-    # Validate input
     if (is.null(X)) stop("Input data X cannot be NULL.", call. = FALSE)
-    if (!is.matrix(X)) stop("Input data X must be a matrix.", call. = FALSE)
+    if (!inherits(X, "matrix") && !inherits(X, "dgCMatrix")) {
+        stop("X must be either a regular matrix or a dgCMatrix.", call. = FALSE)
+    }
 
-    # Try to call the C++ implementation
+    # 调用C++函数时传递X原样，如果是dgCMatrix的话，就会在C++那边解析
     result <- tryCatch({
         util_dbscan_fit_cpp(
-            X = as.matrix(X),
+            X = X,
             eps = eps,
             min_samples = min_samples,
             metric = metric,
@@ -47,7 +48,6 @@ util_dbscan_fit <- function(
         )
     })
 
-    # Parse the result into a structured list
     parsed_result <- list(
         labels = result$labels,
         core_sample_indices = result$core_sample_indices,
@@ -55,6 +55,5 @@ util_dbscan_fit <- function(
         n_features = result$n_features
     )
 
-    # Return the parsed result
     return(parsed_result)
 }

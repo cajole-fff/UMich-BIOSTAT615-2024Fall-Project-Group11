@@ -82,8 +82,8 @@ DBSCAN <- R6::R6Class(
             y = NULL, 
             sample_weight = NULL
         ) {
-            if (!is.matrix(X) && !is.data.frame(X)) {
-                stop("Input data must be a matrix or a data frame.")
+            if (!inherits(X, "matrix") && !inherits(X, "dgCMatrix")) {
+                stop("X must be either a regular matrix or a dgCMatrix.", call. = FALSE)
             }
 
             if (private$..max_memory >= (bitwShiftR(as.numeric(object.size(X)), 20))) {
@@ -140,7 +140,7 @@ DBSCAN <- R6::R6Class(
             method = "pca",
             col_names = c("PC1", "PC2")
         ) {
-            if (!is.matrix(X) && !is.data.frame(X)) {
+            if (!is.data.frame(X) && (!inherits(X, "matrix") && !inherits(X, "dgCMatrix"))) {
                 stop("Input data must be a matrix or a data frame.")
             } else {
                 if (is.null(X)) {
@@ -161,7 +161,7 @@ DBSCAN <- R6::R6Class(
             }
 
             visu_plot_clusters(
-                X = X,
+                X = as.matrix(X),
                 title = title,
                 labels = private$..labels,
                 method = method,
@@ -177,12 +177,12 @@ DBSCAN <- R6::R6Class(
             if (is.null(private$..core_sample_indices)) {
                 stop("The model must be fitted before plotting core samples.")
             }
-            if (!is.matrix(X) && !is.data.frame(X)) {
+            if (!is.data.frame(X) && (!inherits(X, "matrix") && !inherits(X, "dgCMatrix"))) {
                 stop("Input data must be a matrix or a data frame.")
             }
             
             visu_plot_core_samples(
-                X = X,
+                X = as.matrix(X),
                 title = title,
                 core_sample_indices = private$..core_sample_indices
             )
@@ -196,7 +196,7 @@ DBSCAN <- R6::R6Class(
             X = private$..X,
             labels = private$..labels
         ) {
-            if (!is.matrix(X) && !is.data.frame(X)) {
+            if (!is.data.frame(X) && (!inherits(X, "matrix") && !inherits(X, "dgCMatrix"))) {
                 if (is.null(private$..X)) {
                     stop("The model must be fitted before calculating the silhouette score.")
                 } else {
