@@ -1,32 +1,74 @@
+# Load necessary libraries
 library(Rcpp)
-library(dbscan)
-library(microbenchmark)
-sourceCpp("D:/util_dbscan_fit.cpp")  
-
-set.seed(123)
-n_points <- 10000  
-n_features <- 100   
-data <- matrix(rnorm(n_points * n_features), nrow = n_points, ncol = n_features)
-system.time({
-  res_dbscan <- dbscan::dbscan(data, eps = 0.5, minPts = 5)
-})
-system.time({
-  res_custom <- util_dbscan_fit_cpp(data, eps = 0.5, min_samples = 5, n_jobs = 4)
-})
+library(ggplot2)
 library(microbenchmark)
 
-benchmark_results <- microbenchmark(
-  dbscan_pkg = dbscan::dbscan(data, eps = 0.5, minPts = 5),
-  custom_impl = util_dbscan_fit_cpp(data, eps = 0.5, min_samples = 5, n_jobs = 4),
-  times = 10 
-)
+# Load Rcpp functions
+sourceCpp("D:/util_dbscan_fit.cpp")  # Update path to actual location
+sourceCpp("D:/metric_adjusted_rand_index.cpp")
+sourceCpp("D:/metric_silhouette_score.cpp")
 
-print(benchmark_results)
-all.equal(res_custom$labels, res_dbscan$cluster)
-library(pryr)
+source("D:/util_dbscan_fit.R")
+source("D:/metric_adjusted_rand_index.R")
+source("D:/metric_silhouette_score.R")
+source("D:/metric_noise_ratio.R")
+source("D:/visu_plot_clusters.R")
+source("D:/visu_plot_core_samples.R")
+# Generate test data
+generate_test_data <- function() {
+  set.seed(123)
+  cluster1 <- MASS::mvrnorm(100, mu = c(0, 0), Sigma = diag(2))
+  cluster2 <- MASS::mvrnorm(100, mu = c(10, 10), Sigma = diag(2))
+  cluster3 <- MASS::mvrnorm(100, mu = c(0, 10), Sigma = diag(2))
+  data <- rbind(cluster1, cluster2, cluster3)
+  ground_truth <- rep(1:3, each = 100)
+  list(data = data, ground_truth = ground_truth)
+}
 
-res_dbscan <- dbscan::dbscan(data, eps = 0.5, minPts = 5)
-cat("dbscan package memory:", object_size(res_dbscan), "bytes\n")
+# Main testing function
+test_dbscan <- function() {
+  # Generate data
+  test_data <- generate_test_data()
+  data <- test_data$data
+  ground_truth <- test_data$ground_truth
+  
+  # Parameters
+  eps <- 5
+  min_samples <- 5
+  
+  # Run DBSCAN
+  clustering_result <- util_dbscan_fit(data, eps, min_samples)
+  labels <- clustering_result$labels
+  core_sample_indices <- clustering_result$core_sample_indices
+  
+  # Evaluation metrics
+  ari <- metric_adjusted_rand_index(ground_truth, labels)
+  silhouette_score <- metric_silhouette_score(data, labels)
+  noise_ratio <- metric_noise_ratio(labels)
+  
+  # Benchmarking performance
+  benchmark_results <- microbenchmark(
+    dbscan_cpp = util_dbscan_fit(data, eps, min_samples, metric = "euclidean", n_jobs = 4),
+    times = 10
+  )
+  
+  # Visualization (optional)
+  
+  
+  # Output results
+  list(
+    ARI = ari,
+    Silhouette_Score = silhouette_score,
+    Noise_Ratio = noise_ratio,
+    Benchmark = benchmark_results
+  )
+}
 
-res_custom <- util_dbscan_fit_cpp(data, eps = 0.5, min_samples = 5, n_jobs = 4)
-cat("Custom implementation memory :", object_size(res_custom), "bytes\n")
+# Run the test
+results <- test_dbscan()
+
+cat("Adjusted Rand Index (ARI):", results$ARI, "\n")
+cat("Silhouette Score:", results$Silhouette_Score, "\n")
+cat("Noise Ratio:", results$Noise_Ratio, "\n")
+print(results$Benchmark)
+
