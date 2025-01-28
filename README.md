@@ -1,5 +1,5 @@
-## Package: 
-#### Functions: 
+## DBSCAN for R
+#### *with sparse matrix data handling*
 #### **What is the purpose of this package?**
 This package was created as a project for the course "BIOSTAT 615: Statistical Computing".
 It provides an implementation of the DBSCAN (Density-Based Spatial Clustering of Applications with Noise) clustering algorithm. 
